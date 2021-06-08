@@ -2,6 +2,7 @@ import { connect } from "react-redux";
 import styled from "styled-components";
 import { signOutAPI } from "../actions";
 
+
 const Header = (props) => {
   return (
     <Container>
@@ -275,3 +276,5 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
+
+

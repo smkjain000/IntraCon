@@ -1,6 +1,7 @@
 import firebase from "firebase";
 
-const firebaseConfig = {
+
+var firebaseConfig = {
   apiKey: "AIzaSyCUh_IfZjpna0kuOjk_MRr1JhmNgXZkSCk",
   authDomain: "intracon-f9d37.firebaseapp.com",
   projectId: "intracon-f9d37",
@@ -15,6 +16,11 @@ const auth = firebase.auth();
 const provider = new firebase.auth.GoogleAuthProvider();
 const storage = firebase.storage();
 
-export { auth, provider, storage };
+export { auth, provider, storage};
 
 export default db;
+
+
+
+
+	

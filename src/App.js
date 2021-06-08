@@ -6,13 +6,18 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import { getUserAuth } from "./actions";
 import { connect } from "react-redux";
+import RegisterModal from "./components/RegisterModal";
+import LoginModal from "./components/LoginModal";
+
 
 function App(props) {
   useEffect(() => {
     props.getUserAuth();
   }, []);
 
+
   return (
+    
     <div className="App">
       <Router>
         <Switch>
@@ -25,7 +30,9 @@ function App(props) {
           </Route>
         </Switch>
       </Router>
+      
     </div>
+    
   );
 }
 
@@ -38,3 +45,5 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
+
+

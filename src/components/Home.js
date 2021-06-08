@@ -9,6 +9,7 @@ const Home = (props) => {
   return (
     <Container>
       {!props.user && <Redirect to="/" />}
+
       <Section>
         <h5>
           <a>Are you looking for?-</a>

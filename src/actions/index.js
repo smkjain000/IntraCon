@@ -1,4 +1,4 @@
-import { auth, provider,storage } from "../firebase";
+import { auth, provider, storage } from "../firebase";
 import { SET_USER, SET_LOADING_STATUS, GET_ARTICLES } from "./actionType";
 import db from "../firebase";
 
@@ -27,6 +27,21 @@ export function signInAPI() {
       .catch((error) => alert(error.message));
   };
 }
+
+// export function registerAPI(email, password) {
+//   return (dispatch) => {
+//       auth
+//       .createUserWithEmailAndPassword(email, password)
+//       .then((payload) => {
+//         dispatch(setUser(payload.user));
+//       })
+//       .catch((error) => alert(error.message));
+//   };
+// }
+
+// export function signin(email,password){
+//   auth.signInWithEmailAndPassword(email,password);
+// }
 
 export function getUserAuth() {
   return (dispatch) => {
@@ -120,7 +135,3 @@ export function getArticlesAPI() {
       });
   };
 }
-
-
-
-

@@ -1,61 +1,151 @@
 import { useState } from "react";
 import styled from "styled-components";
-
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import { ToastContainer, toast } from "react-toastify";
+import { ScaleLoader } from "react-spinners";
+import firebase from "../firebase";
+import {FormControlLabel,Checkbox,} from '@material-ui/core';
 
 const LoginModal = (props) => {
-  const [editorText, setEditorText] = useState("");
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberme, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleEmail = (event) => {
+    setEmail(event.target.value);
+  };
+  const handlePassword = (event) => {
+    setPassword(event.target.value);
+  };
+  const handleCheck = (event) => {
+    setRememberMe(event.target.checked);
+  };
+
+  const handlerLogin = () => {
+    setLoading(true);
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((response) => {
+        const { user } = response;
+        const data = {
+          userId: user.uid,
+          email: user.email,
+        };
+        localStorage.setItem("user", JSON.stringify(data));
+        const storage = localStorage.getItem("user");
+        const loggedInUser = storage !== null ? JSON.parse(storage) : null;
+        props.loggedIn(loggedInUser);
+        setLoading(false);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        setLoading(false);
+      });
+  };
 
   const reset = (l) => {
-    setEditorText("");
+    setEmail("");
+    setPassword("");
     props.handleloginClick(l);
   };
   return (
-      <>
-      {props.loginModal === "open" &&
-    <Container>
-      <Content>
-        <Header>
-        <img src="/images/intra.jpg" alt="" />
-          <h2>Login</h2>
-          <button onClick={(event)=>reset(event)}>
-            <img src="/images/close.png" alt="" />
-          </button>
-        </Header>
-        <SharedContent>
-          <Editor>
-            {/* <textarea
+    <>
+      {props.loginModal === "open" && (
+        <Container>
+          <Content>
+            <Header>
+              <img src="/images/intra.jpg" alt="" />
+              <h2>Login</h2>
+              <button onClick={(event) => reset(event)}>
+                <img src="/images/close.png" alt="" />
+              </button>
+            </Header>
+            <SharedContent>
+              <Editor>
+                {/* <textarea
               value={editorText}
               onChange={(e) => setEditorText(e.target.value)}
               placeholder="Enter Name"
               autoFocus={true}
             ></textarea> */}
-            
-            <form>
 
-         <label>
-           <p>Email</p>
-           <input name="name" placeholder="Enter Email " />
-         </label>
-
-         <label>
-           <p>Password</p>
-           <input type="password" placeholder="Enter Password"/>
-         </label> 
-       
-       </form> 
-
-
-          </Editor>
-        </SharedContent>
-        <Sharecreation>
-        
-          <Loginbutton>Login</Loginbutton>
-          <p>Forgot password?</p>
-          </Sharecreation>
-        
-      </Content>
-    </Container>
-      }
+                <ValidatorForm
+                  onSubmit={handlerLogin}
+                  onError={(errors) => {
+                    for (const err of errors) {
+                      console.log(err.props.errorMessages[0]);
+                    }
+                  }}
+                  
+                >
+                  <TextValidator
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Email"
+                    onChange={handleEmail}
+                    name="email"
+                    value={email}
+                    validators={["required", "isEmail"]}
+                    errorMessages={[
+                      "this field is required",
+                      "email is not valid",
+                    ]}
+                    autoComplete="off"
+                  />
+                  <TextValidator
+                    variant="outlined"
+                    fullWidth
+                    label="Password"
+                    onChange={handlePassword}
+                    name="password"
+                    type="password"
+                    value={password}
+                    validators={["required"]}
+                    errorMessages={["this field is required"]}
+                    autoComplete="off"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        value={rememberme}
+                        onChange={(e) => handleCheck(e)}
+                        color="primary"
+                      />
+                    }
+                    label="Remember me"
+                  />
+                  {loading ? (
+                    <ScaleLoader
+                      // css={override}
+                      size={150}
+                      color={"#eb4034"}
+                      loading={loading}
+                    />
+                  ) : (
+                    <Loginbutton
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                    >
+                      Sign In
+                      
+                    </Loginbutton>
+                  )}
+                  <p>Forgot password?</p>
+                </ValidatorForm>
+              </Editor>
+            </SharedContent>
+            <Sharecreation>
+              {/* <Loginbutton>Login</Loginbutton> */}
+              
+            </Sharecreation>
+          </Content>
+        </Container>
+      )}
     </>
   );
 };
@@ -121,24 +211,21 @@ const SharedContent = styled.div`
   padding: 8px 12px;
 `;
 
-
 const Sharecreation = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 12px 24px 12px 16px;
 
-  p{
-      font-size: 13px;
-      margin:0px;
-  }
+  
 `;
 
 const Loginbutton = styled.button`
+  margin-top: 15px;
   border-radius: 50px;
-   padding-left: 16px; 
-   padding-right: 16px;
-   padding-top: 16px;
-   padding-bottom: 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 16px;
+  padding-bottom: 16px;
   background: ${(props) => (props.disabled ? "rgba(0,0,0,0.8)" : "#0a66c2")};
   color: ${(props) => (props.disabled ? "rgba(1,1,1,0.2)" : "white")};
   &:hover {
@@ -156,9 +243,14 @@ const Editor = styled.div`
 
   input {
     width: 100%;
-    height: 35px;
+    height: 5px;
     font-size: 16px;
     margin-bottom: 20px;
+  }
+
+  p {
+    font-size: 13px;
+    margin: 0px;
   }
 `;
 

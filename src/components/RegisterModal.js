@@ -1,13 +1,102 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
+// import fire from "../components/fire";
+import { connect } from "react-redux";
+
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import { registerAPI } from "../actions";
+import {
+  Typography,
+  Paper,
+  Avatar,
+  Button,
+  FormControl,
+  Input,
+  InputLabel,
+} from "@material-ui/core";
+import { Link, withRouter } from "react-router-dom";
+import { Height } from "@material-ui/icons";
+import firebase from "../firebase";
 
 const RegisterModal = (props) => {
-  const [editorText, setEditorText] = useState("");
+  // const [editorText, setEditorText] = useState("");
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleName = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleEmail = (event) => {
+    setEmail(event.target.value);
+  };
+  const handlePassword = (event) => {
+    setPassword(event.target.value);
+  };
+  const handleConfirmPassowerd = (event) => {
+    setConfirmPassword(event.target.value);
+  };
+
+  const handleSignup = () => {
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then((payload) => {
+        if (payload) {
+          toast.success("User Registered Successfully");
+        }
+      })
+      .catch((error) => {
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            toast.error(error.message);
+            break;
+          case "auth/invalid-email":
+            toast.error(error.message);
+            break;
+          case "auth/weak-password":
+            toast.error(error.message);
+            break;
+        }
+      });
+  };
+
+  useEffect(() => {
+    ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
+      if (value !== password) {
+        return false;
+      }
+      return true;
+    });
+    return () => {
+      ValidatorForm.removeValidationRule("isPasswordMatch");
+    };
+  }, [password]);
 
   const reset = (e) => {
-    setEditorText("");
+    setName("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
     props.handleClick(e);
   };
+
+  // async function onRegister() {
+  //   try {
+  //     await firebase.register(name, email, password);
+  //     await firebase.addenroll(enroll);
+  //     props.register();
+  //   } catch (error) {
+  //     alert(error.message);
+  //   }
+  // }
+
   return (
     <>
       {props.showModal === "open" && (
@@ -29,28 +118,79 @@ const RegisterModal = (props) => {
               autoFocus={true}
             ></textarea> */}
 
-                <form>
-                  <label>
-                    <p>Name</p>
-                    <input name="name" placeholder="Enter Name" />
-                  </label>
+                <ValidatorForm onSubmit={handleSignup}>
+                  <TextValidator
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Name"
+                    validators={["required"]}
+                    name="name"
+                    autoComplete="off"
+                    placeholder="Enter Name"
+                    id="name"
+                    value={name}
+                    onChange={handleName}
+                  />
 
-                  <label>
-                    <p>Email</p>
-                    <input type="email" placeholder="Enter Email " />
-                  </label>
+                  <TextValidator
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Email"
+                    validators={["required", "isEmail"]}
+                    errorMessages={[
+                      "this field is required",
+                      "email is not valid",
+                    ]}
+                    name="email"
+                    autoComplete="off"
+                    placeholder="Enter Email"
+                    id="email"
+                    value={email}
+                    onChange={handleEmail}
+                  />
 
-                  <label>
-                    <p>Password</p>
-                    <input type="password" placeholder="Enter Password" />
-                  </label>
+                  <TextValidator
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Password"
+                    validators={["required"]}
+                    type="password"
+                    errorMessages={["this field is required"]}
+                    name="password"
+                    autoComplete="off"
+                    placeholder="Enter Password"
+                    id="password"
+                    value={password}
+                    onChange={handlePassword}
+                  />
 
-                  <label>
-                    <p>Enrollment no</p>
-                    <input type="number" placeholder="Enter Enrollment no" />
-                  </label>
+                  <TextValidator
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Confirm Password"
+                    validators={["isPasswordMatch", "required"]}
+                    errorMessages={[
+                      "password mismatch",
+                      "this field is required",
+                    ]}
+                    name="confirmpassword"
+                    type="password"
+                    autoComplete="off"
+                    placeholder="Enter confirm passoword"
+                    id="confirmpassword"
+                    value={confirmPassword}
+                    onChange={handleConfirmPassowerd}
+                  />
 
-                  <Select>
+               <Registerbutton type="submit" fullWidth variant="contained">
+                Register
+              </Registerbutton>
+
+                  {/* <Select>
                     <p>Select branch</p>
                     <select>
                       <option value="IT">IT</option>
@@ -70,13 +210,15 @@ const RegisterModal = (props) => {
                       </option>
                       <option value="4">4</option>
                     </select>
-                  </Select>
-                </form>
+                  </Select> */}
+                </ValidatorForm>
               </Editor>
             </SharedContent>
 
             <Sharecreation>
-              <Registerbutton>Register now</Registerbutton>
+              {/* <Registerbutton type="submit" fullWidth variant="contained">
+                Register
+              </Registerbutton> */}
             </Sharecreation>
           </Content>
         </Container>
@@ -122,13 +264,14 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: white;
 
   button {
     height: 40px;
     width: 40px;
     min-width: auto;
-    color: rgba(0, 0, 0, 0.15);
+    background-color: transparent;
+    border: none;
 
     svg,
     img {
@@ -143,16 +286,15 @@ const SharedContent = styled.div`
   flex-grow: 1;
   overflow-y: auto;
   vertical-align: baseline;
-  /* background: transparent; */
-  background: rgba(0, 0, 0, 0.1);
-  padding: 8px 12px;
+  background: white;
+  padding: 1px 10px;
 `;
 
 const Sharecreation = styled.div`
   display: flex;
   justify-content: center;
   padding: 12px 24px 12px 16px;
-  background: rgba(0, 0, 0, 0.1);
+  background: white;
 `;
 
 const Registerbutton = styled.button`
@@ -172,13 +314,13 @@ const Editor = styled.div`
   padding: 12px 24px;
   textarea {
     width: 100%;
-    min-height: 100px;
+    min-height: 50px;
     resize: none;
   }
 
   input {
     width: 100%;
-    height: 35px;
+    height: 0px;
     font-size: 16px;
     margin-bottom: 20px;
     border: none;
@@ -195,5 +337,17 @@ const Select = styled.div`
     border: none;
   }
 `;
+
+// const mapStateToProps = (state) => {
+//   return {
+//     user: state.userState.user,
+//   };
+// };
+
+// const mapDispatchToProps = (dispatch) => ({
+//   register: () => dispatch(registerAPI()),
+// });
+
+// export default connect(mapStateToProps, mapDispatchToProps)(RegisterModal);
 
 export default RegisterModal;
