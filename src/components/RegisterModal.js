@@ -1,33 +1,21 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-// import fire from "../components/fire";
 import { connect } from "react-redux";
+import db, { auth } from "../firebase";
 
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-import { registerAPI } from "../actions";
-import {
-  Typography,
-  Paper,
-  Avatar,
-  Button,
-  FormControl,
-  Input,
-  InputLabel,
-} from "@material-ui/core";
-import { Link, withRouter } from "react-router-dom";
-import { Height } from "@material-ui/icons";
-import firebase from "../firebase";
+import { Button, makeStyles } from "@material-ui/core";
 
 const RegisterModal = (props) => {
-  // const [editorText, setEditorText] = useState("");
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [enrollmentnumber, setEnrollmentNumber] = useState("");
+
+  const classes = useStyles();
 
   const handleName = (event) => {
     setName(event.target.value);
@@ -42,14 +30,19 @@ const RegisterModal = (props) => {
   const handleConfirmPassowerd = (event) => {
     setConfirmPassword(event.target.value);
   };
+  const handleEnrollmentNumber = (event) => {
+    setEnrollmentNumber(event.target.value);
+  };
 
   const handleSignup = () => {
-    firebase
-      .auth()
+    auth
       .createUserWithEmailAndPassword(email, password)
-      .then((payload) => {
-        if (payload) {
+      .then((response) => {
+        if (response) {
           toast.success("User Registered Successfully");
+          return auth.currentUser.updateProfile({
+            displayName: name,
+          });
         }
       })
       .catch((error) => {
@@ -84,18 +77,9 @@ const RegisterModal = (props) => {
     setEmail("");
     setPassword("");
     setConfirmPassword("");
+    setEnrollmentNumber("");
     props.handleClick(e);
   };
-
-  // async function onRegister() {
-  //   try {
-  //     await firebase.register(name, email, password);
-  //     await firebase.addenroll(enroll);
-  //     props.register();
-  //   } catch (error) {
-  //     alert(error.message);
-  //   }
-  // }
 
   return (
     <>
@@ -111,20 +95,14 @@ const RegisterModal = (props) => {
             </Header>
             <SharedContent>
               <Editor>
-                {/* <textarea
-              value={editorText}
-              onChange={(e) => setEditorText(e.target.value)}
-              placeholder="Enter Name"
-              autoFocus={true}
-            ></textarea> */}
-
-                <ValidatorForm onSubmit={handleSignup}>
+                <ValidatorForm onSubmit={(e) => e.preventDefault() && false}>
                   <TextValidator
                     variant="outlined"
                     margin="normal"
                     fullWidth
                     label="Name"
                     validators={["required"]}
+                    errorMessages={["this field is required"]}
                     name="name"
                     autoComplete="off"
                     placeholder="Enter Name"
@@ -186,11 +164,23 @@ const RegisterModal = (props) => {
                     onChange={handleConfirmPassowerd}
                   />
 
-               <Registerbutton type="submit" fullWidth variant="contained">
-                Register
-              </Registerbutton>
+                  <TextValidator
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Enrollment number"
+                    validators={["required"]}
+                    errorMessages={["this field is required"]}
+                    name="enrollmentnumber"
+                    type="number"
+                    autoComplete="off"
+                    placeholder="Enter enrollment number"
+                    id="confirmpassword"
+                    value={enrollmentnumber}
+                    onChange={handleEnrollmentNumber}
+                  />
 
-                  {/* <Select>
+                  <Select>
                     <p>Select branch</p>
                     <select>
                       <option value="IT">IT</option>
@@ -210,16 +200,20 @@ const RegisterModal = (props) => {
                       </option>
                       <option value="4">4</option>
                     </select>
-                  </Select> */}
+                  </Select>
+
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    className={classes.submit}
+                    onClick={handleSignup}
+                  >
+                    Register
+                  </Button>
                 </ValidatorForm>
               </Editor>
             </SharedContent>
-
-            <Sharecreation>
-              {/* <Registerbutton type="submit" fullWidth variant="contained">
-                Register
-              </Registerbutton> */}
-            </Sharecreation>
           </Content>
         </Container>
       )}
@@ -288,26 +282,7 @@ const SharedContent = styled.div`
   vertical-align: baseline;
   background: white;
   padding: 1px 10px;
-`;
-
-const Sharecreation = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 12px 24px 12px 16px;
-  background: white;
-`;
-
-const Registerbutton = styled.button`
-  border-radius: 50px;
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  background: ${(props) => (props.disabled ? "rgba(0,0,0,0.8)" : "#0a66c2")};
-  color: ${(props) => (props.disabled ? "rgba(1,1,1,0.2)" : "white")};
-  &:hover {
-    background: ${(props) => (props.disabled ? "rgba(0,0,0,0.08)" : "#004182")};
-  }
+  margin-top: -20px;
 `;
 
 const Editor = styled.div`
@@ -321,8 +296,9 @@ const Editor = styled.div`
   input {
     width: 100%;
     height: 0px;
-    font-size: 16px;
-    margin-bottom: 20px;
+    font-size: 20px;
+    margin-bottom: 5px;
+    margin-top: 5px;
     border: none;
   }
 `;
@@ -337,6 +313,15 @@ const Select = styled.div`
     border: none;
   }
 `;
+
+const useStyles = makeStyles((theme) => ({
+  submit: {
+    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+    margin: theme.spacing(3, 0, 2),
+    color: "#fff",
+    padding: "10px",
+  },
+}));
 
 // const mapStateToProps = (state) => {
 //   return {

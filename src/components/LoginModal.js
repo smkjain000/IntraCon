@@ -1,17 +1,27 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { ScaleLoader } from "react-spinners";
-import firebase from "../firebase";
-import {FormControlLabel,Checkbox,} from '@material-ui/core';
+import { auth } from "../firebase";
+import {
+  FormControlLabel,
+  Checkbox,
+  Button,
+  makeStyles,
+} from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 
 const LoginModal = (props) => {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberme, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const classes = useStyles();
+
+  const history = useHistory();
+  const navigateTo = () => history.push("/forgotpassword");
 
   const handleEmail = (event) => {
     setEmail(event.target.value);
@@ -23,10 +33,10 @@ const LoginModal = (props) => {
     setRememberMe(event.target.checked);
   };
 
-  const handlerLogin = () => {
+  const handlerLogin = (e) => {
+    e.preventDefault();
     setLoading(true);
-    firebase
-      .auth()
+    auth
       .signInWithEmailAndPassword(email, password)
       .then((response) => {
         const { user } = response;
@@ -46,9 +56,16 @@ const LoginModal = (props) => {
       });
   };
 
+  const override = `
+        display: block;
+        margin-left: 100px;
+        border-color: red;
+    `;
+
   const reset = (l) => {
     setEmail("");
     setPassword("");
+    setLoading(false);
     props.handleloginClick(l);
   };
   return (
@@ -65,13 +82,6 @@ const LoginModal = (props) => {
             </Header>
             <SharedContent>
               <Editor>
-                {/* <textarea
-              value={editorText}
-              onChange={(e) => setEditorText(e.target.value)}
-              placeholder="Enter Name"
-              autoFocus={true}
-            ></textarea> */}
-
                 <ValidatorForm
                   onSubmit={handlerLogin}
                   onError={(errors) => {
@@ -79,7 +89,6 @@ const LoginModal = (props) => {
                       console.log(err.props.errorMessages[0]);
                     }
                   }}
-                  
                 >
                   <TextValidator
                     variant="outlined"
@@ -120,29 +129,25 @@ const LoginModal = (props) => {
                   />
                   {loading ? (
                     <ScaleLoader
-                      // css={override}
+                      css={override}
                       size={150}
                       color={"#eb4034"}
                       loading={loading}
                     />
                   ) : (
-                    <Loginbutton
+                    <Button
                       type="submit"
                       fullWidth
                       variant="contained"
+                      className={classes.submit}
                     >
                       Sign In
-                      
-                    </Loginbutton>
+                    </Button>
                   )}
-                  <p>Forgot password?</p>
+                  <Button onClick={navigateTo}>Forgot password?</Button>
                 </ValidatorForm>
               </Editor>
             </SharedContent>
-            <Sharecreation>
-              {/* <Loginbutton>Login</Loginbutton> */}
-              
-            </Sharecreation>
           </Content>
         </Container>
       )}
@@ -192,7 +197,8 @@ const Header = styled.div`
     height: 40px;
     width: 40px;
     min-width: auto;
-    color: rgba(0, 0, 0, 0.15);
+    background-color: transparent;
+    border: none;
 
     svg,
     img {
@@ -211,28 +217,6 @@ const SharedContent = styled.div`
   padding: 8px 12px;
 `;
 
-const Sharecreation = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 24px 12px 16px;
-
-  
-`;
-
-const Loginbutton = styled.button`
-  margin-top: 15px;
-  border-radius: 50px;
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  background: ${(props) => (props.disabled ? "rgba(0,0,0,0.8)" : "#0a66c2")};
-  color: ${(props) => (props.disabled ? "rgba(1,1,1,0.2)" : "white")};
-  &:hover {
-    background: ${(props) => (props.disabled ? "rgba(0,0,0,0.08)" : "#004182")};
-  }
-`;
-
 const Editor = styled.div`
   padding: 12px 24px;
   textarea {
@@ -244,8 +228,9 @@ const Editor = styled.div`
   input {
     width: 100%;
     height: 5px;
-    font-size: 16px;
-    margin-bottom: 20px;
+    font-size: 20px;
+    margin-bottom: 10px;
+    margin-top: 10px;
   }
 
   p {
@@ -253,5 +238,14 @@ const Editor = styled.div`
     margin: 0px;
   }
 `;
+
+const useStyles = makeStyles((theme) => ({
+  submit: {
+    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+    margin: theme.spacing(3, 0, 2),
+    color: "#fff",
+    padding: '10px',
+  },
+}));
 
 export default LoginModal;

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.css";
 import Header from "./components/Header";
@@ -8,6 +8,8 @@ import { getUserAuth } from "./actions";
 import { connect } from "react-redux";
 import RegisterModal from "./components/RegisterModal";
 import LoginModal from "./components/LoginModal";
+import forgotpassword from "./components/ForgotPassword";
+import ForgotPassword from "./components/ForgotPassword";
 
 
 function App(props) {
@@ -15,24 +17,53 @@ function App(props) {
     props.getUserAuth();
   }, []);
 
+  const [user, setUser] = useState("");
+  const [toggleForm, setToggleForm] = useState(true);
+  const formMode = () => {
+    setToggleForm(!toggleForm);
+  };
+  const userState = () => {
+    const data = localStorage.getItem("user");
+    const us = data !== null ? JSON.parse(data) : null;
+    setUser(us);
+  };
+
+  useEffect(() => {
+    userState();
+  }, []);
 
   return (
-    
-    <div className="App">
-      <Router>
-        <Switch>
-          <Route exact path="/">
-            <Login />
-          </Route>
-          <Route path="/home">
-            <Header />
-            <Home />
-          </Route>
-        </Switch>
-      </Router>
-      
-    </div>
-    
+    // <>
+    //   {user !== null ? (
+    //     <>setUserState={() => setUser(null)}</>
+    //   ) : (
+    //     <>
+    //       {toggleForm ? (
+    //         <LoginModal loggedIn={(user) => setUser(user)} />
+    //       ) : (
+    //         <RegisterModal toggle={() => formMode()} />
+    //       )}
+    //     </>
+    //   )}
+
+      <div className="App">
+        <Router>
+          <Switch>
+            <Route exact path="/">
+              <Login />
+            </Route>
+            <Route path="/home">
+              <Header />
+              <Home />
+            </Route>
+            <Route exact path="/forgotpassword">
+              <ForgotPassword/>
+              
+            </Route>
+          </Switch>
+        </Router>
+      </div>
+    // </>
   );
 }
 
@@ -45,5 +76,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
-
-
