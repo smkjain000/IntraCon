@@ -8,8 +8,8 @@ import { getUserAuth } from "./actions";
 import { connect } from "react-redux";
 import RegisterModal from "./components/RegisterModal";
 import LoginModal from "./components/LoginModal";
-import forgotpassword from "./components/ForgotPassword";
 import ForgotPassword from "./components/ForgotPassword";
+import ChatRoom from "./components/ChatRoom";
 
 
 function App(props) {
@@ -46,23 +46,26 @@ function App(props) {
     //     </>
     //   )}
 
-      <div className="App">
-        <Router>
-          <Switch>
-            <Route exact path="/">
-              <Login />
-            </Route>
-            <Route path="/home">
-              <Header />
-              <Home />
-            </Route>
-            <Route exact path="/forgotpassword">
-              <ForgotPassword/>
-              
-            </Route>
-          </Switch>
-        </Router>
-      </div>
+    <div className="App">
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <Login />
+          </Route>
+          <Route path="/home">
+            <Header />
+            <Home />
+          </Route>
+          <Route exact path="/forgotpassword">
+            <ForgotPassword />
+          </Route>
+
+          <Route exact path="/chatroom">
+            <ChatRoom />
+          </Route>
+        </Switch>
+      </Router>
+    </div>
     // </>
   );
 }

@@ -1,9 +1,15 @@
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { signOutAPI } from "../actions";
+import ChatRoom from "./ChatRoom";
+import { useHistory } from "react-router-dom";
+
 
 
 const Header = (props) => {
+
+  const history = useHistory();
+  const navigateTo = () => history.push("/chatroom");
   return (
     <Container>
       <Content>
@@ -53,7 +59,7 @@ const Header = (props) => {
             <NavList>
               <a>
                 <img src="/images/nav-notifications.svg" alt="" />
-                <span>Notifications</span>
+                <span onClick={navigateTo}>Group Chat</span>
               </a>
             </NavList>
 
@@ -90,6 +96,7 @@ const Header = (props) => {
     </Container>
   );
 };
+
 
 const Container = styled.div`
   background-color: white;

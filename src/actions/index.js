@@ -28,21 +28,6 @@ export function signInAPI() {
   };
 }
 
-// export function registerAPI(email, password) {
-//   return (dispatch) => {
-//       auth
-//       .createUserWithEmailAndPassword(email, password)
-//       .then((payload) => {
-//         dispatch(setUser(payload.user));
-//       })
-//       .catch((error) => alert(error.message));
-//   };
-// }
-
-// export function signin(email,password){
-//   auth.signInWithEmailAndPassword(email,password);
-// }
-
 export function getUserAuth() {
   return (dispatch) => {
     auth.onAuthStateChanged(async (user) => {
@@ -127,7 +112,7 @@ export function getArticlesAPI() {
     let payload;
 
     db.collection("articles")
-      .orderBy("actor.date", "desc")
+      .orderBy("actor.date" ,"desc")
       .onSnapshot((snapshot) => {
         payload = snapshot.docs.map((doc) => doc.data());
 

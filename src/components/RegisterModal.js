@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import db, { auth } from "../firebase";
+import db, { auth, storage } from "../firebase";
+import { ScaleLoader } from "react-spinners";
 
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { toast } from "react-toastify";
@@ -14,6 +15,7 @@ const RegisterModal = (props) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [enrollmentnumber, setEnrollmentNumber] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const classes = useStyles();
 
@@ -34,7 +36,9 @@ const RegisterModal = (props) => {
     setEnrollmentNumber(event.target.value);
   };
 
-  const handleSignup = () => {
+  const handleSignup = (e) => {
+    e.preventDefault();
+    setLoading(true);
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((response) => {
@@ -44,17 +48,21 @@ const RegisterModal = (props) => {
             displayName: name,
           });
         }
+        setLoading(false);
       })
       .catch((error) => {
         switch (error.code) {
           case "auth/email-already-in-use":
             toast.error(error.message);
+            setLoading(false);
             break;
           case "auth/invalid-email":
             toast.error(error.message);
+            setLoading(false);
             break;
           case "auth/weak-password":
             toast.error(error.message);
+            setLoading(false);
             break;
         }
       });
@@ -78,8 +86,15 @@ const RegisterModal = (props) => {
     setPassword("");
     setConfirmPassword("");
     setEnrollmentNumber("");
+    setLoading(false);
     props.handleClick(e);
   };
+
+  const override = `
+        display: block;
+        margin-left: 100px;
+        border-color: red;
+    `;
 
   return (
     <>
@@ -95,7 +110,14 @@ const RegisterModal = (props) => {
             </Header>
             <SharedContent>
               <Editor>
-                <ValidatorForm onSubmit={(e) => e.preventDefault() && false}>
+                <ValidatorForm
+                  onSubmit={handleSignup}
+                  onError={(errors) => {
+                    for (const err of errors) {
+                      console.log(err.props.errorMessages[0]);
+                    }
+                  }}
+                >
                   <TextValidator
                     variant="outlined"
                     margin="normal"
@@ -175,7 +197,7 @@ const RegisterModal = (props) => {
                     type="number"
                     autoComplete="off"
                     placeholder="Enter enrollment number"
-                    id="confirmpassword"
+                    id="enroll"
                     value={enrollmentnumber}
                     onChange={handleEnrollmentNumber}
                   />
@@ -202,15 +224,23 @@ const RegisterModal = (props) => {
                     </select>
                   </Select>
 
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    className={classes.submit}
-                    onClick={handleSignup}
-                  >
-                    Register
-                  </Button>
+                  {loading ? (
+                    <ScaleLoader
+                      css={override}
+                      size={150}
+                      color={"#eb4034"}
+                      loading={loading}
+                    />
+                  ) : (
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      className={classes.submit}
+                    >
+                      Register
+                    </Button>
+                  )}
                 </ValidatorForm>
               </Editor>
             </SharedContent>
