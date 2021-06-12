@@ -11,7 +11,6 @@ import LoginModal from "./components/LoginModal";
 import ForgotPassword from "./components/ForgotPassword";
 import ChatRoom from "./components/ChatRoom";
 
-
 function App(props) {
   useEffect(() => {
     props.getUserAuth();

@@ -4,10 +4,7 @@ import { signOutAPI } from "../actions";
 import ChatRoom from "./ChatRoom";
 import { useHistory } from "react-router-dom";
 
-
-
 const Header = (props) => {
-
   const history = useHistory();
   const navigateTo = () => history.push("/chatroom");
   return (
@@ -29,23 +26,9 @@ const Header = (props) => {
         <Nav>
           <NavListWrap>
             <NavList className="active">
-              <a>
+              <a href="/home">
                 <img src="/images/nav-home.svg" alt="" />
                 <span>Home</span>
-              </a>
-            </NavList>
-
-            <NavList>
-              <a>
-                <img src="/images/nav-network.svg" alt="" />
-                <span>My Network</span>
-              </a>
-            </NavList>
-
-            <NavList>
-              <a>
-                <img src="/images/nav-jobs.svg" alt="" />
-                <span>Find Profiles</span>
               </a>
             </NavList>
 
@@ -58,7 +41,25 @@ const Header = (props) => {
 
             <NavList>
               <a>
-                <img src="/images/nav-notifications.svg" alt="" />
+                <img src="/images/nav-jobs.svg" alt="" />
+                <span>Find Profiles</span>
+              </a>
+            </NavList>
+
+            <NavList>
+              <a>
+                <img src="/images/nav-network.svg" alt="" />
+                <span>My Network</span>
+              </a>
+            </NavList>
+
+            <NavList>
+              <a>
+                <img
+                  src="/images/nav-messaging.svg"
+                  alt=""
+                  onClick={navigateTo}
+                />
                 <span onClick={navigateTo}>Group Chat</span>
               </a>
             </NavList>
@@ -96,7 +97,6 @@ const Header = (props) => {
     </Container>
   );
 };
-
 
 const Container = styled.div`
   background-color: white;
@@ -283,5 +283,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
-
-

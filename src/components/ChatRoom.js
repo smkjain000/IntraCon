@@ -1,27 +1,38 @@
 import db, { auth, storage } from "../firebase";
+import React, { useRef, useState } from "react";
+import "./Chatroom.css";
+
+import firebase from "firebase/app";
+import "firebase/firestore";
+import "firebase/auth";
+import "firebase/analytics";
+
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import React, { useRef, useState } from "react";
-import firebase from "firebase";
-import style from "../style/Chatroom.module.css";
-import styled from "styled-components";
-import { useHistory } from "react-router-dom";
 import Header from "./Header";
+import Home from "./Home";
+import Login from "./Login";
+
 
 function ChatRoom() {
   const [user] = useAuthState(auth);
 
   return (
-    <div className={style.chatroom}>
-      <header>
-        <h1>Welcome {auth.currentUser.displayName} !</h1>
-        <h1>Group Chat</h1>
-        <h1>IntraCon</h1>
-        {/* <SignOut /> */}
-      </header>
+    <>
+      <Header />
+      <layout>
+        
+      </layout>
+      <div className="ChatRoom">
+        <header>
+          <h1>Welcome {auth.currentUser.displayName} !</h1>
+          <h1>Group chat</h1>
+          <h1>IntraCon</h1>
+        </header>
 
-      <section>{user ? <Chat /> : <SignIn />}</section>
-    </div>
+        <section>{user ? <Chat /> : <SignIn />}</section>
+      </div>
+    </>
   );
 }
 
@@ -33,10 +44,10 @@ function SignIn() {
 
   return (
     <>
-      <button className={style.signin} onClick={signInWithGoogle}>
+      <button className="sign-in" onClick={signInWithGoogle}>
         Sign in with Google
       </button>
-      <p>
+      <p className="p">
         Do not violate the community guidelines or you will be banned for life!
       </p>
     </>
@@ -44,18 +55,15 @@ function SignIn() {
 }
 
 // function SignOut() {
-//   return (
-//     auth.currentUser && (
-//       <button className="sign-out" onClick={() => auth.signOut()}>
-//         Sign Out
-//       </button>
-//     )
-//   );
+//   return auth.currentUser && (
+//     <button className="sign-out" onClick={() => auth.signOut()}>Sign Out</button>
+//   )
 // }
+
 function Chat() {
   const dummy = useRef();
   const messagesRef = db.collection("messages");
-  const query = messagesRef.orderBy("createdAt").limit(25);
+  const query = messagesRef.orderBy("createdAt");
 
   const [messages] = useCollectionData(query, { idField: "id" });
 
@@ -64,11 +72,12 @@ function Chat() {
   const sendMessage = async (e) => {
     e.preventDefault();
 
-    const { uid, photoURL } = auth.currentUser;
+    const { uid, photoURL, displayName } = auth.currentUser;
 
     await messagesRef.add({
       text: formValue,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      displayName,
       uid,
       photoURL,
     });
@@ -79,22 +88,22 @@ function Chat() {
 
   return (
     <>
-      <mainchat className={style.mainchat}>
+      <main className="main">
         {messages &&
           messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
 
         <span ref={dummy}></span>
-      </mainchat>
+      </main>
 
-      <form className={style.form} onSubmit={sendMessage}>
+      <form className="form" onSubmit={sendMessage}>
         <input
-          className={style.input}
+          className="input"
           value={formValue}
           onChange={(e) => setFormValue(e.target.value)}
-          placeholder="Interact with your peers"
+          placeholder="Interact with your peers !!!"
         />
 
-        <button className={style.button} type="submit" disabled={!formValue}>
+        <button className="formbutton" type="submit" disabled={!formValue}>
           Send
         </button>
       </form>
@@ -103,21 +112,17 @@ function Chat() {
 }
 
 function ChatMessage(props) {
-  const { text, uid, photoURL } = props.message;
+  const { text, uid, photoURL, displayName } = props.message;
 
   const messageClass = uid === auth.currentUser.uid ? "sent" : "received";
+
   return (
     <>
-      {/* <div className={`message ${messageClass}`}> */}
-      <div className={style.message}>
-        <img
-          className={style.img}
-          src={
-            photoURL || "https://api.adorable.io/avatars/23/abott@adorable.png"
-          }
-        />
-        <div>{auth.currentUser.displayName}</div>
-        <p className={style.p}>{text}</p>
+      <div className={`message ${messageClass}`}>
+        <img className="img" src={photoURL || "/images/user.svg"} />
+
+        <span className="span">{displayName}</span>
+        <p className="p">{text}</p>
       </div>
     </>
   );

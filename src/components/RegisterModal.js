@@ -37,13 +37,35 @@ const RegisterModal = (props) => {
   };
 
   const handleSignup = (e) => {
+    // const user = {
+    //   name,
+    //   email,
+    //   password,
+    //   enrollmentnumber,
+    // };
     e.preventDefault();
     setLoading(true);
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((response) => {
+        // const currentUser = auth().currentUser;
+        // const name = user.name;
+        // currentUser
+        //   .updateProfile({
+        //     displayName: name,
+        //   })
+        //   .then(() => {
+        //     db.collection("userdetails").doc(response.user.uid).set({
+        //       name: user.name,
+        //       email: user.email,
+        //       enrollmentnumber: user.enrollmentnumber,
+        //       uid: response.user.uid,
+        //       createdat: new Date(),
+        //     });
+        //   });
         if (response) {
           toast.success("User Registered Successfully");
+
           return auth.currentUser.updateProfile({
             displayName: name,
           });
