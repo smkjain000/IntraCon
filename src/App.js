@@ -6,10 +6,14 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import { getUserAuth } from "./actions";
 import { connect } from "react-redux";
-import RegisterModal from "./components/RegisterModal";
-import LoginModal from "./components/LoginModal";
 import ForgotPassword from "./components/ForgotPassword";
 import ChatRoom from "./components/ChatRoom";
+
+import Header1 from "./Header1";
+import TinderCards from "./TinderCards";
+import SwipeButtons from "./SwipeButtons";
+import Chats from "./Chats";
+import ChatScreen from "./ChatScreen";
 
 function App(props) {
   useEffect(() => {
@@ -62,6 +66,23 @@ function App(props) {
           <Route exact path="/chatroom">
             <ChatRoom />
           </Route>
+
+          <Route path="/chat/:person">
+            <Header1 backButton="/chat" />
+            <ChatScreen/>
+          </Route>
+          <Route path="/chat">
+            <Header1 backButton="/findprofile" />
+            <Chats />
+          </Route>
+          <Route path="/findprofile">
+            <Header/>
+            <Header1 />
+            <TinderCards />
+            <SwipeButtons />
+          </Route>
+
+          
         </Switch>
       </Router>
     </div>

@@ -6,86 +6,10 @@ import { Redirect } from "react-router";
 import RegisterModal from "./RegisterModal";
 import LoginModal from "./LoginModal";
 
-import React, { useEffect } from "react";
-import {
-  CssBaseline,
-  Avatar,
-  Typography,
-  Button,
-  Grid,
-  Link,
-  makeStyles,
-  Card,
-  CardContent,
-} from "@material-ui/core";
-import { LockRounded } from "@material-ui/icons";
-import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-// import fire from '../helpers/db';
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import { auth } from "../firebase";
+import React from "react";
 
 const Login = (props) => {
   const [showModal, setShowModal] = useState("close");
-
-  const classes = useStyles();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const handleName = (event) => {
-    setName(event.target.value);
-  };
-
-  const handleEmail = (event) => {
-    setEmail(event.target.value);
-  };
-  const handlePassword = (event) => {
-    setPassword(event.target.value);
-  };
-  const handleConfirmPassowerd = (event) => {
-    setConfirmPassword(event.target.value);
-  };
-  const handleSignUp = () => {
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((response) => {
-        if (response) {
-          props.toggle();
-          toast.success("User Registered Successfully");
-          return auth.currentUser.updateProfile({
-            displayName: name,
-          });
-        }
-      })
-      .catch((error) => {
-        switch (error.code) {
-          case "auth/email-already-in-use":
-            toast.error(error.message);
-            break;
-          case "auth/invalid-email":
-            toast.error(error.message);
-            break;
-          case "auth/weak-password":
-            toast.error(error.message);
-            break;
-        }
-      });
-  };
-
-  useEffect(() => {
-    ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
-      if (value !== password) {
-        return false;
-      }
-      return true;
-    });
-    return () => {
-      ValidatorForm.removeValidationRule("isPasswordMatch");
-    };
-  }, [password]);
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -143,93 +67,7 @@ const Login = (props) => {
         <Hero>
           <h1>Welcome to your Professional Community</h1>
           <h4>Build a Strong Connection among individuals within a College</h4>
-          {/* <img src="/images/login-hero.svg" alt="" /> */}
-
-          <Container component="main" maxWidth="xs">
-            <Card className={classes.card}>
-              <CardContent>
-                <ToastContainer />
-                <CssBaseline />
-                <div className={classes.paper}>
-                  <Avatar className={classes.avatar}>
-                    <LockRounded />
-                  </Avatar>
-                  <Typography component="h1" variant="h5">
-                    Register
-                  </Typography>
-                  <ValidatorForm
-                    onSubmit={handleSignUp}
-                    className={classes.form}
-                  >
-                    <TextValidator
-                      variant="outlined"
-                      margin="normal"
-                      fullWidth
-                      label="Name"
-                      onChange={handleName}
-                      name="name"
-                      value={name}
-                      validators={["required"]}
-                      errorMessages={["this field is required"]}
-                      autoComplete="off"
-                    />
-                    <TextValidator
-                      variant="outlined"
-                      margin="normal"
-                      fullWidth
-                      label="Email"
-                      onChange={handleEmail}
-                      name="email"
-                      value={email}
-                      validators={["required", "isEmail"]}
-                      errorMessages={[
-                        "this field is required",
-                        "email is not valid",
-                      ]}
-                      autoComplete="off"
-                    />
-                    <br />
-                    <TextValidator
-                      variant="outlined"
-                      fullWidth
-                      label="Password"
-                      onChange={handlePassword}
-                      name="password"
-                      type="password"
-                      value={password}
-                      validators={["required"]}
-                      errorMessages={["this field is required"]}
-                      autoComplete="off"
-                    />
-                    <br />
-                    <TextValidator
-                      variant="outlined"
-                      label="Confirm password"
-                      fullWidth
-                      onChange={handleConfirmPassowerd}
-                      name="confirmPassword"
-                      type="password"
-                      validators={["isPasswordMatch", "required"]}
-                      errorMessages={[
-                        "password mismatch",
-                        "this field is required",
-                      ]}
-                      value={confirmPassword}
-                      autoComplete="off"
-                    />
-                    <Button
-                      type="submit"
-                      fullWidth
-                      variant="contained"
-                      className={classes.submit}
-                    >
-                      Register Now
-                    </Button>
-                  </ValidatorForm>
-                </div>
-              </CardContent>
-            </Card>
-          </Container>
+          <img src="/images/login-hero.svg" alt="" />
         </Hero>
 
         <Form>
@@ -242,39 +80,6 @@ const Login = (props) => {
     </Contain>
   );
 };
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    margin: theme.spacing(3, 0, 2),
-    color: "#fff",
-    padding: "10px",
-  },
-  card: {
-    marginTop: "60px",
-    paddingLeft: "20px",
-    paddingRight: "20px",
-    paddingBottom: "20px",
-  },
-  pointer: {
-    cursor: "pointer",
-    color: "red",
-  },
-}));
 
 const Contain = styled.div`
   padding: 0px;
@@ -364,19 +169,29 @@ const Hero = styled.div`
     @media (max-width: 768px) {
       text-align: center;
       font-size: 20px;
-      font-weight: 500;
+      font-weight: 700;
       width: 100%;
       line-height: 2;
     }
   }
 
-  /* .img {
+  h4 {
+    @media (max-width: 768px) {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 550;
+      width: 100%;
+      line-height: 2;
+    }
+  }
+
+  img {
     //z-index:-1;
-    width: 700px;
-    height: 670px;
+    width: 600px;
+    height: 850px;
     position: absolute;
     bottom: -2px;
-    right: -150px;
+    right: -75px;
 
     @media (max-width: 768px) {
       top: 230px;
@@ -384,21 +199,6 @@ const Hero = styled.div`
       position: initial;
       height: initial;
     }
-  } */
-`;
-
-const Container = styled.div`
-  width: 450px;
-  height: 700px;
-  position: absolute;
-  bottom: -2px;
-  right: -10px;
-
-  @media (max-width: 768px) {
-    top: 200px;
-    width: initial;
-    position: initial;
-    height: initial;
   }
 `;
 
@@ -408,6 +208,7 @@ const Form = styled.div`
 
   @media (max-width: 768px) {
     margin-top: 20px;
+    margin-left: 25px;
   }
 `;
 

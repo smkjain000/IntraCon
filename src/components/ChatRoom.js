@@ -10,9 +10,6 @@ import "firebase/analytics";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import Header from "./Header";
-import Home from "./Home";
-import Login from "./Login";
-
 
 function ChatRoom() {
   const [user] = useAuthState(auth);
@@ -20,9 +17,6 @@ function ChatRoom() {
   return (
     <>
       <Header />
-      <layout>
-        
-      </layout>
       <div className="ChatRoom">
         <header>
           <h1>Welcome {auth.currentUser.displayName} !</h1>

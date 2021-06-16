@@ -24,8 +24,8 @@ body {
   z-index: 99;
   padding: 10px;
   box-sizing: border-box;
-  padding-top: 80px;
-  padding-bottom: 30px;
+  margin-top: 60px;
+  margin-bottom: 30px;
 }
 
 .ChatRoom section {

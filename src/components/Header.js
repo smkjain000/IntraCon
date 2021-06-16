@@ -40,7 +40,7 @@ const Header = (props) => {
             </NavList>
 
             <NavList>
-              <a>
+              <a href="/findprofile">
                 <img src="/images/nav-jobs.svg" alt="" />
                 <span>Find Profiles</span>
               </a>
