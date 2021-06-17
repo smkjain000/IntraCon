@@ -15,6 +15,8 @@ const RegisterModal = (props) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [enrollmentnumber, setEnrollmentNumber] = useState("");
+  const [photourl, setPhotoUrl] = useState("");
+  const [skills, setSkills] = useState("");
   const [loading, setLoading] = useState(false);
 
   const classes = useStyles();
@@ -35,38 +37,39 @@ const RegisterModal = (props) => {
   const handleEnrollmentNumber = (event) => {
     setEnrollmentNumber(event.target.value);
   };
+  const handlePhotoUrl = (event) => {
+    setPhotoUrl(event.target.value);
+  };
+  const handleSkills = (event) => {
+    setSkills(event.target.value);
+  };
 
   const handleSignup = (e) => {
-    // const user = {
-    //   name,
-    //   email,
-    //   password,
-    //   enrollmentnumber,
-    // };
+    const user = {
+      name,
+      email,
+      password,
+      enrollmentnumber,
+      photourl,
+      skills,
+    };
     e.preventDefault();
     setLoading(true);
     auth
-      .createUserWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(user.email, user.password)
       .then((response) => {
-        // const currentUser = auth().currentUser;
-        // const name = user.name;
-        // currentUser
-        //   .updateProfile({
-        //     displayName: name,
-        //   })
-        //   .then(() => {
-        //     db.collection("userdetails").doc(response.user.uid).set({
-        //       name: user.name,
-        //       email: user.email,
-        //       enrollmentnumber: user.enrollmentnumber,
-        //       uid: response.user.uid,
-        //       createdat: new Date(),
-        //     });
-        //   });
         if (response) {
           toast.success("User Registered Successfully");
 
-          return auth.currentUser.updateProfile({
+          return db.collection("userdetails").doc(response.user.uid).set({
+                     displayName:user.name,
+                     email:user.email,
+                     enrollmentnumber:user.enrollmentnumber,
+                     photoURL:user.photourl,
+                     skills:user.skills,
+                     uid:response.user.uid,
+                     createdAt:new Date(),
+          }), auth.currentUser.updateProfile({
             displayName: name,
           });
         }
@@ -224,6 +227,37 @@ const RegisterModal = (props) => {
                     onChange={handleEnrollmentNumber}
                   />
 
+                   <TextValidator
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Photo URL"
+                    validators={["required"]}
+                    errorMessages={["this field is required"]}
+                    name="photourl"
+                    type="url"
+                    autoComplete="off"
+                    placeholder="Enter Photo URL"
+                    id="photourl"
+                    value={photourl}
+                    onChange={handlePhotoUrl}
+                  />
+
+                   <TextValidator
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Skills"
+                    validators={["required"]}
+                    errorMessages={["this field is required"]}
+                    name="skills"
+                    autoComplete="off"
+                    placeholder="Enter Skills"
+                    id="skills"
+                    value={skills}
+                    onChange={handleSkills}
+                  />
+
                   <Select>
                     <p>Select branch</p>
                     <select>
@@ -375,16 +409,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// const mapStateToProps = (state) => {
-//   return {
-//     user: state.userState.user,
-//   };
-// };
+const mapStateToProps = (state) => {
+  return {
+    user: state.userState.user,
+  };
+};
 
 // const mapDispatchToProps = (dispatch) => ({
 //   register: () => dispatch(registerAPI()),
 // });
 
-// export default connect(mapStateToProps, mapDispatchToProps)(RegisterModal);
+export default connect(mapStateToProps)(RegisterModal);
 
-export default RegisterModal;

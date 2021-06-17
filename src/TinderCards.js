@@ -8,7 +8,7 @@ function TinderCards() {
 
   useEffect(() => {
     const unsubscribe = db
-      .collection("people")
+      .collection("userdetails")
       .onSnapshot((snapshot) =>
         setPeople(snapshot.docs.map((doc) => doc.data()))
       );
@@ -24,15 +24,15 @@ function TinderCards() {
         {people.map((person) => (
           <TinderCard
             className="swipe"
-            key={person.name}
+            key={person.displayName}
             preventSwipe={["up", "down"]}
           >
             <div
-              style={{ backgroundImage: `url(${person.url})` }}
+              style={{ backgroundImage: `url(${person.photoURL})` }}
               className="card"
             >
-              <h3>{person.name}</h3>
-              <p>{person.desc}</p>
+              <h3>{person.displayName}</h3>
+              <p>{person.skills}</p>
             </div>
           </TinderCard>
         ))}
